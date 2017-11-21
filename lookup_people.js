@@ -11,15 +11,20 @@ const client = new pg.Client({
   ssl      : settings.ssl
 });
 
+function lookupPeopleByFirstOrLastName(name) {
+  client.query("SELECT * FROM famous_people WHERE first_name = $1 OR last_name = $1", [myArgs[0]], (err, result) => {
+    if (err) {
+      console.error("Error running query! ", err)
+    } else {
+      console.log(result.rows[0]);
+      client.end();
+    }
+  });
+};
+
 client.connect((err) => {
   if (err) {
-    return console.error("Connection Error", err);
+    console.error("Connection error. ", err)
   }
-  client.query('SELECT * FROM famous_people WHERE first_name = $1 OR last_name =$1', [myArgs[0]], (err, result) => {
-    if (err) {
-      return console.error("error running query", err);
-    }
-    console.log(result.rows); //output: 1
-    client.end()
-  });
+  lookupPeopleByFirstOrLastName(myArgs[0]);
 });
